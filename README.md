@@ -1,2 +1,2 @@
-# 3D-MonoGS-SLAM
-Quadruped Planning using Monocular Gaussian Splatting 3D SLAM
+# text2splatter
+Text to 3D gaussian splatting using Stable Diffusion

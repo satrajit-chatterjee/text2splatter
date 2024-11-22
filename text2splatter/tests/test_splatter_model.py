@@ -48,16 +48,27 @@ encoder = SongUNetEncoder(cfg).to(device)
 features, skips = encoder(input_images)
 print(f"encoded.shape: {features.shape}")
 
-decoder = Text2SplatDecoder(cfg).to(device)
-reconstruction = decoder(
-    features, 
-    skips, 
-    data["view_to_world_transforms"][:, :cfg.data.input_images, ...], 
-    rot_transform_quats, 
-    focals_pixels_pred
-)
-for k, v in reconstruction.items():
-    print(f"reconstruction[{k}].shape: {v.shape}")
+text2splat_dec = Text2SplatDecoder(cfg).to(device)
+split_dimensions, scale_inits, bias_inits = text2splat_dec.get_splits_and_inits(True, cfg)
+decoder = SongUNetDecoder(
+                        cfg,
+                        split_dimensions,
+                        bias_inits,
+                        scale_inits
+                    ).to(device)
+gaussian_splats = decoder(features, skips)
+print(f"gaussian_splats.shape: {gaussian_splats.shape}")
+
+# decoder = Text2SplatDecoder(cfg).to(device)
+# reconstruction = decoder(
+#     features, 
+#     skips, 
+#     data["view_to_world_transforms"][:, :cfg.data.input_images, ...], 
+#     rot_transform_quats, 
+#     focals_pixels_pred
+# )
+# for k, v in reconstruction.items():
+#     print(f"reconstruction[{k}].shape: {v.shape}")
 
 ####################################################################################################
 exit()

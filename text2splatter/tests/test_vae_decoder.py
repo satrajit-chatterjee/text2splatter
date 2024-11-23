@@ -1,14 +1,7 @@
 import torch
 from copy import deepcopy
-import numpy as np
-from omegaconf import OmegaConf
-from huggingface_hub import hf_hub_download
-import matplotlib.pyplot as plt
-from tqdm import tqdm
 from diffusers import AutoencoderKL
 
-from text2splatter.models import SongUNetEncoder, load_encoder_weights
-from text2splatter.splatter_image.datasets.dataset_factory import get_dataset
 
 device = "cuda:1"
 
@@ -17,7 +10,6 @@ vae = AutoencoderKL.from_pretrained(
         )
 
 decoder = deepcopy(vae.decoder)
-# print(decoder)
 
 # We need input/output of this shape:
 # input.shape: torch.Size([4, 256, 16, 16])

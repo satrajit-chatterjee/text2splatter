@@ -1,4 +1,5 @@
 splatter_image/
+diff_gaussian_rasterization/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

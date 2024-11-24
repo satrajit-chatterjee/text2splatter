@@ -6,3 +6,5 @@ ftfy
 tensorboard
 Jinja2
 peft==0.7.0
+omegaconf==2.3.0
+matplotlib==3.9.2

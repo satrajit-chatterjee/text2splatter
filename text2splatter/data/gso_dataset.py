@@ -26,6 +26,13 @@ class GSODataset(torch.utils.data.Dataset):
                  ) -> None:
         
         super(GSODataset).__init__()
+        
+        if gso_root is None or not os.path.exists(gso_root):
+            raise ValueError("Please provide a valid path to the GSO dataset")
+        if prompts_folder is None or not os.path.exists(prompts_folder):
+            raise ValueError("Please provide a valid path to the prompts folder")
+        if path_folder is None or not os.path.exists(path_folder):
+            raise ValueError("Please provide a valid path to the path folder")
 
         self.tokenizer = CLIPTokenizer.from_pretrained(
             pretrained_model_name_or_path, subfolder="tokenizer", revision=None

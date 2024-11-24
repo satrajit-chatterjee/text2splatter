@@ -11,6 +11,10 @@ resolution = 128
 center_crop = True
 random_flip = True
 
+GSO_ROOT = "/Users/paulkathmann/code/UPenn/ESE5460/final_project/data/scratch/shared/beegfs/cxzheng/dataset_new/google_scanned_blender_25_w2c/" # Change this to your data directory
+PROMPTS_FOLDER = "/Users/paulkathmann/code/UPenn/ESE5460/final_project/text2splatter/data/gso/prompts.json"
+PATH_FOLDER = "/Users/paulkathmann/code/UPenn/ESE5460/final_project/text2splatter/data/gso/paths.json"
+
 train_transforms = transforms.Compose(
         [
             transforms.Resize(resolution, interpolation=transforms.InterpolationMode.BILINEAR),
@@ -28,7 +32,7 @@ def main():
     print(cfg.data.category)
     cfg.data.category = dataset_name
     split = "test"
-    dataset = get_dataset(cfg, split, transform=train_transforms)
+    dataset = get_dataset(cfg, split, transform=train_transforms, gso_root=GSO_ROOT, prompts_folder=PROMPTS_FOLDER, path_folder=PATH_FOLDER)
     print(len(dataset))
 
     dataloader = DataLoader(dataset, batch_size=4, shuffle=True,

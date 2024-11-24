@@ -19,7 +19,10 @@ class GSODataset(torch.utils.data.Dataset):
     def __init__(self,
                  cfg,
                  dataset_name = "test",
-                 transform = None
+                 transform = None,
+                 gso_root = GSO_ROOT,
+                 prompts_folder = PROMPTS_FOLDER,
+                 path_folder = PATH_FOLDER
                  ) -> None:
         
         super(GSODataset).__init__()
@@ -30,13 +33,13 @@ class GSODataset(torch.utils.data.Dataset):
         self.transform = transform
         self.cfg = cfg
         self.convert_to_tensor = transforms.ToTensor()
-        self.root_dir = GSO_ROOT
+        self.root_dir = gso_root
         assert dataset_name != "train", "No training on GSO dataset!"
 
         self.dataset_name = dataset_name
         
-        self.prompts = json.load(open(PROMPTS_FOLDER))
-        self.paths = json.load(open(PATH_FOLDER))
+        self.prompts = json.load(open(prompts_folder))
+        self.paths = json.load(open(path_folder))
 
         print('============= length of dataset %d =============' % len(self.paths))
         

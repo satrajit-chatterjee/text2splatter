@@ -37,7 +37,7 @@ def store_prompts_in_one_file(prompts_folder: str):
 
 
 def main():
-    gso_folder = "./gso"
+    gso_folder = "../../data/gso/"
     get_image_paths(gso_folder)
     store_prompts_in_one_file(gso_folder)
 

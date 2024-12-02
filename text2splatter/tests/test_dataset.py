@@ -12,8 +12,8 @@ center_crop = True
 random_flip = True
 
 GSO_ROOT = "/Users/paulkathmann/code/UPenn/ESE5460/final_project/data/scratch/shared/beegfs/cxzheng/dataset_new/google_scanned_blender_25_w2c/" # Change this to your data directory
-PROMPTS_FOLDER = "/Users/paulkathmann/code/UPenn/ESE5460/final_project/text2splatter/data/gso/prompts.json"
-PATH_FOLDER = "/Users/paulkathmann/code/UPenn/ESE5460/final_project/text2splatter/data/gso/paths.json"
+GSO_METADATA_FOLDER = "/Users/paulkathmann/code/UPenn/ESE5460/final_project/text2splatter/data/gso/"
+
 
 train_transforms = transforms.Compose(
         [
@@ -31,17 +31,29 @@ def main():
     cfg = OmegaConf.load(cfg_path)
     print(cfg.data.category)
     cfg.data.category = dataset_name
-    split = "test"
-    dataset = get_dataset(cfg, split, transform=train_transforms, gso_root=GSO_ROOT, prompts_folder=PROMPTS_FOLDER, path_folder=PATH_FOLDER)
-    print(len(dataset))
+    train_dataset = get_dataset(cfg, train=True, transform=train_transforms, root=GSO_ROOT, metadata=GSO_METADATA_FOLDER)
+    print(len(train_dataset))
 
-    dataloader = DataLoader(dataset, batch_size=4, shuffle=True,
+    train_dataloader = DataLoader(train_dataset, batch_size=4, shuffle=True,
                             persistent_workers=True, pin_memory=True, num_workers=1)
 
-    prompt, image = next(iter(dataloader))
+    prompt, image = next(iter(train_dataloader))
     print(f"{prompt=}")
     print(f"{prompt.shape=}")
     print(f"{image.shape=}")
+    
+    # eval data
+    eval_dataset = get_dataset(cfg, train=False, transform=train_transforms, root=GSO_ROOT, metadata=GSO_METADATA_FOLDER)
+    print(len(eval_dataset))
+
+    eval_dataloader = DataLoader(eval_dataset, batch_size=1, shuffle=True,
+                            persistent_workers=True, pin_memory=True, num_workers=1)
+
+    test_prompt, test_image = next(iter(eval_dataloader))
+    print(f"{test_prompt=}")
+    print(f"{test_prompt.shape=}")
+    print(f"{test_image.shape=}")
+    
 
 
     # plot all 25 images in batch

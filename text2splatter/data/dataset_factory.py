@@ -1,7 +1,7 @@
 from .gso_dataset import GSODataset
 
-def get_dataset(cfg, name, transform=None, gso_root=None, prompts_folder=None, path_folder=None):
+def get_dataset(cfg, train, transform=None, root=None, metadata=None):
     if cfg.data.category == "gso":
-        return GSODataset(cfg, name, transform, gso_root, prompts_folder, path_folder)
+        return GSODataset(cfg, train, transform, root, metadata)
     else:
         raise NotImplementedError(f"Dataset {cfg.data.category} not implemented")

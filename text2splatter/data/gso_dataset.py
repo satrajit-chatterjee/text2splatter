@@ -10,9 +10,9 @@ from transformers import CLIPTextModel, CLIPTokenizer
 
 pretrained_model_name_or_path="stabilityai/stable-diffusion-2"
 
-GSO_ROOT = "/Users/paulkathmann/code/UPenn/ESE5460/final_project/data/scratch/shared/beegfs/cxzheng/dataset_new/google_scanned_blender_25_w2c/" # Change this to your data directory
-PROMPTS_FOLDER = "/Users/paulkathmann/code/UPenn/ESE5460/final_project/text2splatter/data/gso/prompts.json"
-PATH_FOLDER = "/Users/paulkathmann/code/UPenn/ESE5460/final_project/text2splatter/data/gso/paths.json"
+GSO_ROOT = "/data/satrajic/google_scanned_objects/scratch/shared/beegfs/cxzheng/dataset_new/google_scanned_blender_25_w2c/" # Change this to your data directory
+PROMPTS_FOLDER = "../../data/gso/prompts.json"
+PATH_FOLDER = "../../data/gso/paths.json"
 assert GSO_ROOT is not None, "Update path of the dataset"
 
 class GSODataset(torch.utils.data.Dataset):
@@ -22,7 +22,8 @@ class GSODataset(torch.utils.data.Dataset):
                  transform = None,
                  gso_root = GSO_ROOT,
                  prompts_folder = PROMPTS_FOLDER,
-                 path_folder = PATH_FOLDER
+                 path_folder = PATH_FOLDER,
+                 style_prompt = "in the style of ttsplat"
                  ) -> None:
         
         super(GSODataset).__init__()
@@ -47,6 +48,7 @@ class GSODataset(torch.utils.data.Dataset):
         
         self.prompts = json.load(open(prompts_folder))
         self.paths = json.load(open(path_folder))
+        self.style_prompt = style_prompt
 
         print('============= length of dataset %d =============' % len(self.paths))
         
@@ -56,6 +58,7 @@ class GSODataset(torch.utils.data.Dataset):
             captions, max_length=self.tokenizer.model_max_length, padding="max_length", truncation=True, return_tensors="pt"
         )
         return inputs.input_ids
+
     def __len__(self):
         return len(self.paths)
                                                       
@@ -69,10 +72,17 @@ class GSODataset(torch.utils.data.Dataset):
         filepath = os.path.join(GSO_ROOT, image_class_folder)
 
         image_class_name = image_class_folder.split("/")[0]
-        prompt = self.tokenize_prompts(str(np.random.choice(self.prompts[image_class_name])))
-        if self.transform:
-            image = self.transform(Image.open(filepath))
-        else:
-            image = self.convert_to_tensor(Image.open(filepath))
+        try:
+            prompt = self.tokenize_prompts(str(np.random.choice(self.prompts[image_class_name])) + " " + self.style_prompt)
+            if self.transform:
+                image = self.transform(Image.open(filepath).convert("RGB"))
+            else:
+                image = self.convert_to_tensor(Image.open(filepath).convert("RGB"))
+        except:
+            print(f"image class folder: {image_class_folder}")
+            print(f"image class name: {image_class_name}")
+            print(f"choice: {self.prompts[image_class_name]}")
+            print(f"Error loading image {filepath}")
+            exit()
         
         return prompt, image

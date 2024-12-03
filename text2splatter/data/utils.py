@@ -2,7 +2,7 @@ import json
 import os
 
 # replace with the path to the dataset!
-ROOT_FOLDER = "/Users/paulkathmann/code/UPenn/ESE5460/final_project/data/scratch/shared/beegfs/cxzheng/dataset_new/google_scanned_blender_25_w2c/"
+ROOT_FOLDER = "/data/satrajic/google_scanned_objects/scratch/shared/beegfs/cxzheng/dataset_new/google_scanned_blender_25_w2c/"
 
 
 def get_image_paths(path_folder: str):

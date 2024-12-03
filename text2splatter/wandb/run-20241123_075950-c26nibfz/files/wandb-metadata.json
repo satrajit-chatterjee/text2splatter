@@ -1,0 +1,67 @@
+{
+  "os":  "Linux-5.4.0-196-generic-x86_64-with-glibc2.29",
+  "python":  "3.8.10",
+  "startedAt":  "2024-11-23T07:59:50.498055Z",
+  "args":  [
+    "--pretrained_model_name_or_path",
+    "stabilityai/stable-diffusion-2",
+    "--train_batch_size",
+    "4",
+    "--report_to",
+    "wandb",
+    "--num_train_epochs",
+    "10",
+    "--checkpoints_total_limit",
+    "5"
+  ],
+  "program":  "finetune_decoder.py",
+  "codePath":  "text2splatter/finetune_decoder.py",
+  "git":  {
+    "remote":  "git@github.com:satrajit-chatterjee/text2splatter.git",
+    "commit":  "19f76bb2b0e015dd354243782a4557eccaa85823"
+  },
+  "email":  "satrajitdchatterjee@gmail.com",
+  "root":  "/workspace/project/text2splatter/text2splatter",
+  "host":  "4236e1c1d331",
+  "username":  "root",
+  "executable":  "/workspace/thesis-venv/bin/python",
+  "codePathLocal":  "finetune_decoder.py",
+  "cpu_count":  64,
+  "cpu_count_logical":  128,
+  "gpu":  "NVIDIA RTX A6000",
+  "gpu_count":  3,
+  "disk":  {
+    "/":  {
+      "total":  "943412031488",
+      "used":  "875013230592"
+    }
+  },
+  "memory":  {
+    "total":  "540942897152"
+  },
+  "cpu":  {
+    "count":  64,
+    "countLogical":  128
+  },
+  "gpu_nvidia":  [
+    {
+      "name":  "NVIDIA RTX A6000",
+      "memoryTotal":  "51527024640",
+      "cudaCores":  10752,
+      "architecture":  "Ampere"
+    },
+    {
+      "name":  "NVIDIA RTX A6000",
+      "memoryTotal":  "51527024640",
+      "cudaCores":  10752,
+      "architecture":  "Ampere"
+    },
+    {
+      "name":  "NVIDIA RTX A6000",
+      "memoryTotal":  "51527024640",
+      "cudaCores":  10752,
+      "architecture":  "Ampere"
+    }
+  ],
+  "cudaVersion":  "12.6"
+}

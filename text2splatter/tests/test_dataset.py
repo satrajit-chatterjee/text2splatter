@@ -1,9 +1,7 @@
-import numpy as np
 import matplotlib.pyplot as plt
 from omegaconf import OmegaConf
 from torch.utils.data import DataLoader
 from huggingface_hub import hf_hub_download
-from transformers import CLIPTokenizer
 
 from text2splatter.data.dataset_factory import get_dataset
 import torchvision.transforms as transforms
@@ -11,6 +9,8 @@ import torchvision.transforms as transforms
 resolution = 128
 center_crop = True
 random_flip = True
+
+GSO_METADATA_FOLDER = "../../data/gso/"
 
 GSO_ROOT = "/data/satrajic/google_scanned_objects/scratch/shared/beegfs/cxzheng/dataset_new/google_scanned_blender_25_w2c/" # Change this to your data directory
 PROMPTS_FOLDER = "../../data/gso/prompts.json"
@@ -32,25 +32,28 @@ def main():
     cfg = OmegaConf.load(cfg_path)
     print(cfg.data.category)
     cfg.data.category = dataset_name
-    split = "test"
-    dataset = get_dataset(cfg, split, transform=train_transforms, gso_root=GSO_ROOT, prompts_folder=PROMPTS_FOLDER, path_folder=PATH_FOLDER)
-    print(len(dataset))
+    train_dataset = get_dataset(cfg, train=True, transform=train_transforms, root=GSO_ROOT, metadata=GSO_METADATA_FOLDER)
+    print(len(train_dataset))
 
-    dataloader = DataLoader(dataset, batch_size=1, shuffle=True,
+    train_dataloader = DataLoader(train_dataset, batch_size=4, shuffle=True,
                             persistent_workers=True, pin_memory=True, num_workers=1)
 
-    prompt, image = next(iter(dataloader))
+    prompt, image = next(iter(train_dataloader))
     print(f"{prompt=}")
     print(f"{prompt.shape=}")
-    # print(f"{image=}")
-    tokenizer = CLIPTokenizer.from_pretrained(
-        "stabilityai/stable-diffusion-2", subfolder="tokenizer", revision=None
-    )
-    prompt = prompt.squeeze(1)
-    print(f"{prompt.shape=}")
-    prompt = tokenizer.batch_decode(prompt, skip_special_tokens=True)
-    print(f"{prompt=}")
+    print(f"{image.shape=}")
+    
+    # eval data
+    eval_dataset = get_dataset(cfg, train=False, transform=train_transforms, root=GSO_ROOT, metadata=GSO_METADATA_FOLDER)
+    print(len(eval_dataset))
 
+    eval_dataloader = DataLoader(eval_dataset, batch_size=1, shuffle=True,
+                            persistent_workers=True, pin_memory=True, num_workers=1)
+
+    test_prompt, test_image = next(iter(eval_dataloader))
+    print(f"{test_prompt=}")
+    print(f"{test_prompt.shape=}")
+    print(f"{test_image.shape=}")
 
     # plot all 25 images in batch
     # fig, axs = plt.subplots(5, 5, figsize=(20, 20))

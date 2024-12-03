@@ -1,13 +1,14 @@
 import json
 import os
+import random
 
 # replace with the path to the dataset!
 ROOT_FOLDER = "/data/satrajic/google_scanned_objects/scratch/shared/beegfs/cxzheng/dataset_new/google_scanned_blender_25_w2c/"
 
 
-def get_image_paths(path_folder: str):
+def get_image_paths(path_folder: str, image_folders: list[str]):
     image_paths = []
-    for image_folder in os.listdir(ROOT_FOLDER):
+    for image_folder in image_folders:
         image_folder += "/render_mvs_25/model"
         image_folder = os.path.join(ROOT_FOLDER, image_folder)
         for image in os.listdir(image_folder):
@@ -19,9 +20,9 @@ def get_image_paths(path_folder: str):
     with open(f"{path_folder}/paths.json", "w") as f:
         json.dump(image_paths, f)
 
-def store_prompts_in_one_file(prompts_folder: str):
+def store_prompt_paths(prompts_folder: str, image_folders: list[str]):
     prompts = {}
-    for image_folder in os.listdir(ROOT_FOLDER):
+    for image_folder in image_folders:
         image_folder += "/render_mvs_25/model"
         image_folder = os.path.join(ROOT_FOLDER, image_folder)
         for file in os.listdir(image_folder):
@@ -34,12 +35,27 @@ def store_prompts_in_one_file(prompts_folder: str):
                     prompts[image_folder] = file_contents.get("prompts")
     with open(f"{prompts_folder}/prompts.json", "w") as f:
         json.dump(prompts, f)
+        
+def get_image_folders(gso_folder: str):
+    for image_folder in os.listdir(ROOT_FOLDER):
+        image_folder += "/render_mvs_25/model"
+        image_folder = os.path.join(ROOT_FOLDER, image_folder)
 
 
 def main():
-    gso_folder = "../../data/gso/"
-    get_image_paths(gso_folder)
-    store_prompts_in_one_file(gso_folder)
+    image_folders = os.listdir(ROOT_FOLDER)
+    random.shuffle(image_folders)
+    validation_folders = image_folders[:5]
+    training_folders = image_folders[5:]
+
+    gso_folder_training = "../../data/gso/training"
+    gso_folder_validation = "../../data/gso/validation"
+
+    get_image_paths(gso_folder_training, training_folders)
+    store_prompt_paths(gso_folder_training, training_folders)
+    
+    get_image_paths(gso_folder_validation, validation_folders)
+    store_prompt_paths(gso_folder_validation, validation_folders)
 
 if __name__ == "__main__":
     main()

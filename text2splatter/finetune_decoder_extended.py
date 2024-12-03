@@ -32,6 +32,7 @@ from text2splatter.models import (
     SongUNetEncoder, 
     SongUNetDecoder, 
     Text2SplatDecoder,
+    ExtendedDecoder,
     load_encoder_weights, 
     load_decoder_weights
 )
@@ -176,22 +177,18 @@ def main(args):
 
     # Freeze VAE parameters
     vae.requires_grad_(False)
-    gaussian_splat_decoder = deepcopy(vae.decoder)
+    gaussian_splat_decoder = ExtendedDecoder(deepcopy(vae.decoder))
 
     # We need input/output of this shape:
     # input.shape: torch.Size([4, 256, 16, 16])
     # output.shape: torch.Size([4, 24, 128, 128])
-    gaussian_splat_decoder.conv_out =  torch.nn.Conv2d(128, 24, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
 
     # with torch.no_grad():
-    #     gaussian_splat_decoder.conv_out.weight.copy_(vae.decoder.conv_out.weight.repeat(24 // 3, 1, 1, 1))
+    #     gaussian_splat_decoder.original_decoder.conv_out.weight.copy_(vae.decoder.conv_out.weight.repeat(24 // 3, 1, 1, 1))
 
 
     # Set gaussian_splat_decoder to train
-    # gaussian_splat_decoder.requires_grad_(True)
-    # gaussian_splat_decoder.mid_block.requires_grad_(False)
-    gaussian_splat_decoder.requires_grad_(False)
-    gaussian_splat_decoder.conv_out.requires_grad_(True)
+    gaussian_splat_decoder.requires_grad_(True)
 
     '''
     Load splatter-image encoder/decoder model. This provides ground-truth latents. 

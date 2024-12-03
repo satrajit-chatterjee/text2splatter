@@ -51,14 +51,16 @@ vae = AutoencoderKL.from_pretrained(
         "stabilityai/stable-diffusion-2", subfolder="vae"
     )
 vae.requires_grad_(False)
+vae = vae.to(device)
+vae.eval()
 gaussian_splat_decoder = deepcopy(vae.decoder)
-gaussian_splat_decoder.conv_in = torch.nn.Conv2d(256, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
 gaussian_splat_decoder.conv_out = torch.nn.Conv2d(128, 24, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
 
-finetuned_state_dict = torch.load("/data/satrajic/saved_models/text-3d-diffusion/checkpoint-2500/gaussian_splat_decoder.pth")
+finetuned_state_dict = torch.load("/data/satrajic/saved_models/text-3d-diffusion/decoder/checkpoint-46750/gaussian_splat_decoder.pth")
 gaussian_splat_decoder.load_state_dict(finetuned_state_dict)
 gaussian_splat_decoder = gaussian_splat_decoder.to(device)
 gaussian_splat_decoder.requires_grad_(False)
+gaussian_splat_decoder.eval()
 
 for i, datum in enumerate(tqdm(dataset, desc="Processing dataset")):
     data = {k: v.to(device) for k, v in datum.items()}
@@ -68,7 +70,8 @@ for i, datum in enumerate(tqdm(dataset, desc="Processing dataset")):
     gt_gaussian_splat = gt_gaussian_splat.reshape(gt_gaussian_splat.size(0), -1).to("cpu")
     np.save(f"results/gt_gaussian_splats_outputs_{i}.npy", gt_gaussian_splat.numpy())
 
-    pred_gaussian_splat = gaussian_splat_decoder(features)
+    pred_latent = vae.encode(input_images).latent_dist.mean
+    pred_gaussian_splat = gaussian_splat_decoder(pred_latent)
     pred_gaussian_splat = pred_gaussian_splat.reshape(pred_gaussian_splat.size(0), -1).to("cpu")
     np.save(f"results/pred_gaussian_splats_outputs_{i}.npy", pred_gaussian_splat.numpy())
     if i == 100:

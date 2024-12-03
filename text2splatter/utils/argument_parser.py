@@ -27,11 +27,33 @@ def parse_args(input_args=None):
         help="Path to pretrained Splatter Image model from huggingface.co/models.",
     )
     parser.add_argument(
-        "--context_length",
-        type=int,
-        default=11,
-        required=False,
-        help="The context length for the model.",
+        "--tracker_project_name",
+        type=str,
+        default="text-3d-diffusion",
+        help=(
+            "The `project_name` argument passed to Accelerator.init_trackers for"
+            " more information see https://huggingface.co/docs/accelerate/v0.17.0/en/package_reference/accelerator#accelerate.Accelerator"
+        ),
+    )
+    parser.add_argument(
+        "--prediction_type",
+        type=str,
+        default="epsilon",
+        help="The prediction_type that shall be used for training. Choose between 'epsilon' or 'v_prediction' or leave `None`. If left to `None` the default prediction type of the scheduler: `noise_scheduler.config.prediction_type` is chosen.",
+    )
+    parser.add_argument(
+        "--dream_training",
+        action="store_true",
+        help=(
+            "Use the DREAM training method, which makes training more efficient and accurate at the ",
+            "expense of doing an extra forward pass. See: https://arxiv.org/abs/2312.00210",
+        ),
+    )
+    parser.add_argument(
+        "--dream_detail_preservation",
+        type=float,
+        default=1.0,
+        help="Dream detail preservation factor p (should be greater than 0; default=1.0, as suggested in the paper)",
     )
     parser.add_argument(
         "--noise_offset", 
@@ -140,14 +162,14 @@ def parse_args(input_args=None):
     parser.add_argument(
         "--output_dir",
         type=str,
-        default="/data/satrajic/saved_models/text-3d-diffusion",
+        default="/data/satrajic/saved_models/text-3d-diffusion/unet",
         help="The output directory where the model predictions and checkpoints will be written.",
     )
     parser.add_argument("--seed", type=int, default=42, help="A seed for reproducible training.")
     parser.add_argument(
         "--resolution",
         type=int,
-        default=512,
+        default=128,
         help=(
             "The resolution for input images, all the images in the train/validation dataset will be resized to this"
             " resolution"
@@ -160,6 +182,14 @@ def parse_args(input_args=None):
         help=(
             "Whether to center crop the input images to the resolution. If not set, the images will be randomly"
             " cropped. The images will be resized to the resolution first before cropping."
+        ),
+    )
+    parser.add_argument(
+        "--random_flip",
+        default=False,
+        action="store_true",
+        help=(
+            "Whether to randomly flip the input images horizontally. This is applied after the center crop."
         ),
     )
     parser.add_argument(
@@ -221,7 +251,7 @@ def parse_args(input_args=None):
     parser.add_argument(
         "--learning_rate",
         type=float,
-        default=1e-5,
+        default=1e-4,
         help="Initial learning rate (after the potential warmup period) to use.",
     )
     parser.add_argument(

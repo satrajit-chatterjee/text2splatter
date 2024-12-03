@@ -452,8 +452,8 @@ class Text2SplatDecoder(nn.Module):
 
     def forward(self, 
                 x, 
-                skips,
                 source_cameras_view_to_world, 
+                skips=None,
                 source_cv2wT_quat=None,
                 focals_pixels=None,
                 activate_output=True,

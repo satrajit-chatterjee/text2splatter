@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from text2splatter.models import Text2SplatDecoder, SongUNetEncoder, SongUNetDecoder
 from text2splatter.splatter_image.datasets.dataset_factory import get_dataset
 from text2splatter.splatter_image.scene.gaussian_predictor import GaussianSplatPredictor
-from text2splatter.splatter_image.gaussian_renderer import render_predicted
+# from text2splatter.splatter_image.gaussian_renderer import render_predicted
 
 device = "cuda:1"
 
@@ -64,11 +64,14 @@ split_dimensions, scale_inits, bias_inits = text2splat_dec.get_splits_and_inits(
 decoder = Text2SplatDecoder(cfg).to(device)
 reconstruction = decoder(
     features, 
-    skips, 
     data["view_to_world_transforms"][:, :cfg.data.input_images, ...], 
+    skips, 
     rot_transform_quats, 
     focals_pixels_pred
 )
+
+print(f"view_to_world_transforms.shape: {data['view_to_world_transforms'][:, :cfg.data.input_images, ...].shape}")
+print(f"rot_transform_quats.shape: {rot_transform_quats.shape}")
 
 # Save the gt images
 fig, axs = plt.subplots(5, 5, figsize=(20, 20))
@@ -88,15 +91,19 @@ for r_idx in range(data["gt_images"].shape[1]):
         focals_pixels_render = data["focals_pixels"][0, r_idx]
     else:
         focals_pixels_render = None
-    image = render_predicted({k: v[0].contiguous() for k, v in reconstruction.items()},
-                                data["world_view_transforms"][0, r_idx],
-                                data["full_proj_transforms"][0, r_idx], 
-                                data["camera_centers"][0, r_idx],
-                                background,
-                                cfg,
-                                focals_pixels=focals_pixels_render)["render"]
+    # image = render_predicted({k: v[0].contiguous() for k, v in reconstruction.items()},
+    #                             data["world_view_transforms"][0, r_idx],
+    #                             data["full_proj_transforms"][0, r_idx], 
+    #                             data["camera_centers"][0, r_idx],
+    #                             background,
+    #                             cfg,
+    #                             focals_pixels=focals_pixels_render)["render"]
+    print("world_view_transforms.shape:", data["world_view_transforms"][0, r_idx].shape)
+    print("full_proj_transforms.shape:", data["full_proj_transforms"][0, r_idx].shape)
+    print("camera_centers.shape:", data["camera_centers"][0, r_idx].shape)
+    print("focals_pixels_render.shape:", focals_pixels_render.shape)
 
-    images.append(image)
+    # images.append(image)
 
 print(f"len(images): {len(images)}")
 # exit()

@@ -1,4 +1,3 @@
-import numpy as np
 import matplotlib.pyplot as plt
 from omegaconf import OmegaConf
 from torch.utils.data import DataLoader
@@ -11,9 +10,11 @@ resolution = 128
 center_crop = True
 random_flip = True
 
-GSO_ROOT = "/Users/paulkathmann/code/UPenn/ESE5460/final_project/data/scratch/shared/beegfs/cxzheng/dataset_new/google_scanned_blender_25_w2c/" # Change this to your data directory
-GSO_METADATA_FOLDER = "/Users/paulkathmann/code/UPenn/ESE5460/final_project/text2splatter/data/gso/"
+GSO_METADATA_FOLDER = "../../data/gso/"
 
+GSO_ROOT = "/data/satrajic/google_scanned_objects/scratch/shared/beegfs/cxzheng/dataset_new/google_scanned_blender_25_w2c/" # Change this to your data directory
+PROMPTS_FOLDER = "../../data/gso/prompts.json"
+PATH_FOLDER = "../../data/gso/paths.json"
 
 train_transforms = transforms.Compose(
         [
@@ -53,8 +54,6 @@ def main():
     print(f"{test_prompt=}")
     print(f"{test_prompt.shape=}")
     print(f"{test_image.shape=}")
-    
-
 
     # plot all 25 images in batch
     # fig, axs = plt.subplots(5, 5, figsize=(20, 20))

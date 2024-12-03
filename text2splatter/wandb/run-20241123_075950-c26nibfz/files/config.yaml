@@ -1,0 +1,166 @@
+_wandb:
+    value:
+        cli_version: 0.18.5
+        m: []
+        python_version: 3.8.10
+        t:
+            "1":
+                - 1
+                - 11
+                - 41
+                - 49
+                - 55
+                - 71
+                - 83
+                - 98
+                - 105
+            "2":
+                - 1
+                - 11
+                - 41
+                - 49
+                - 55
+                - 71
+                - 83
+                - 98
+                - 105
+            "3":
+                - 2
+                - 23
+                - 55
+                - 61
+            "4": 3.8.10
+            "5": 0.18.5
+            "6": 4.45.1
+            "8":
+                - 5
+            "12": 0.18.5
+            "13": linux-x86_64
+adam_beta1:
+    value: 0.9
+adam_beta2:
+    value: 0.999
+adam_epsilon:
+    value: 1e-08
+adam_weight_decay:
+    value: 0.01
+allow_tf32:
+    value: false
+center_crop:
+    value: false
+checkpointing_steps:
+    value: 250
+checkpoints_total_limit:
+    value: 5
+class_data_dir:
+    value: null
+class_prompt:
+    value: null
+concepts_list:
+    value: null
+context_length:
+    value: 11
+dataloader_num_workers:
+    value: 2
+enable_xformers_memory_efficient_attention:
+    value: false
+freeze_model:
+    value: crossattn_kv
+gradient_accumulation_steps:
+    value: 1
+gradient_checkpointing:
+    value: false
+hflip:
+    value: false
+hub_model_id:
+    value: null
+hub_token:
+    value: null
+initializer_token:
+    value: ktn+pll+ucd
+input_perturbation:
+    value: 0
+instance_data_dir:
+    value: null
+instance_prompt:
+    value: null
+learning_rate:
+    value: 1e-05
+local_rank:
+    value: -1
+logging_dir:
+    value: logs
+lr_scheduler:
+    value: constant
+lr_warmup_steps:
+    value: 500
+max_grad_norm:
+    value: 1
+max_train_steps:
+    value: null
+mixed_precision:
+    value: null
+modifier_token:
+    value: null
+no_safe_serialization:
+    value: false
+noaug:
+    value: false
+noise_offset:
+    value: 0
+num_class_images:
+    value: 200
+num_inference_steps:
+    value: 30
+num_train_epochs:
+    value: 10
+num_validation_images:
+    value: 2
+output_dir:
+    value: /data/satrajic/saved_models/text-3d-diffusion
+pretrained_clip_model_name_or_path:
+    value: null
+pretrained_model_name_or_path:
+    value: stabilityai/stable-diffusion-2
+prior_generation_precision:
+    value: null
+prior_loss_weight:
+    value: 1
+push_to_hub:
+    value: false
+real_prior:
+    value: false
+report_to:
+    value: wandb
+resolution:
+    value: 512
+resume_from_checkpoint:
+    value: null
+revision:
+    value: null
+sample_batch_size:
+    value: 4
+scale_lr:
+    value: false
+seed:
+    value: 42
+set_grads_to_none:
+    value: false
+snr_gamma:
+    value: null
+splatter_dataset_name:
+    value: gso
+tokenizer_name:
+    value: null
+train_batch_size:
+    value: 4
+use_8bit_adam:
+    value: false
+validation_prompt:
+    value: null
+validation_steps:
+    value: 50
+variant:
+    value: null
+with_prior_preservation:
+    value: false

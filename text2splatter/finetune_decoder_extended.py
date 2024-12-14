@@ -373,28 +373,32 @@ def main(args):
 
     # Potentially load in the weights and states from a previous save
     if args.resume_from_checkpoint:
-        if args.resume_from_checkpoint != "latest":
-            path = os.path.basename(args.resume_from_checkpoint)
-        else:
-            # Get the most recent checkpoint
-            dirs = os.listdir(args.output_dir)
-            dirs = [d for d in dirs if d.startswith("checkpoint")]
-            dirs = sorted(dirs, key=lambda x: int(x.split("-")[1]))
-            path = dirs[-1] if len(dirs) > 0 else None
+        # if args.resume_from_checkpoint != "latest":
+        #     path = os.path.basename(args.resume_from_checkpoint)
+        # else:
+        #     # Get the most recent checkpoint
+        #     dirs = os.listdir(args.output_dir)
+        #     dirs = [d for d in dirs if d.startswith("checkpoint")]
+        #     dirs = sorted(dirs, key=lambda x: int(x.split("-")[1]))
+        #     path = dirs[-1] if len(dirs) > 0 else None
 
-        if path is None:
-            accelerator.print(
-                f"Checkpoint '{args.resume_from_checkpoint}' does not exist. Starting a new training run."
-            )
-            args.resume_from_checkpoint = None
-            initial_global_step = 0
-        else:
-            accelerator.print(f"Resuming from checkpoint {path}")
-            gaussian_splat_decoder.load_state_dict(torch.load(os.path.join(args.output_dir, path, "gaussian_splat_decoder.pth")))
-            global_step = int(path.split("-")[1])
+        # if path is None:
+        #     accelerator.print(
+        #         f"Checkpoint '{args.resume_from_checkpoint}' does not exist. Starting a new training run."
+        #     )
+        #     args.resume_from_checkpoint = None
+        #     initial_global_step = 0
+        # else:
+        #     accelerator.print(f"Resuming from checkpoint {path}")
+        #     gaussian_splat_decoder.load_state_dict(torch.load(os.path.join(args.output_dir, path, "gaussian_splat_decoder.pth")))
+        #     global_step = int(path.split("-")[1])
 
-            initial_global_step = global_step
-            first_epoch = global_step // num_update_steps_per_epoch
+        gaussian_splat_decoder.load_state_dict(torch.load("/data/satrajic/saved_models/text-3d-diffusion/decoder/checkpoint-34500/gaussian_splat_decoder.pth"))
+        # global_step = int(path.split("-")[1])
+        global_step = 0
+
+        initial_global_step = global_step
+        first_epoch = global_step // num_update_steps_per_epoch
     else:
         initial_global_step = 0
 

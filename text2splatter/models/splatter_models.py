@@ -282,12 +282,13 @@ class Text2SplatDecoder(nn.Module):
         self.do_decode = do_decode
         self.cfg = cfg
         split_dimensions, scale_inits, bias_inits = self.get_splits_and_inits(True, cfg)
-        self.gaussian_decoder = SongUNetDecoder(
-                                cfg, 
-                                split_dimensions,
-                                final_out_bias=bias_inits,
-                                final_out_scale=scale_inits,
-                            )
+        if self.do_decode:
+            self.gaussian_decoder = SongUNetDecoder(
+                                    cfg, 
+                                    split_dimensions,
+                                    final_out_bias=bias_inits,
+                                    final_out_scale=scale_inits,
+                                )
         
         self.init_ray_dirs()
         
@@ -460,16 +461,20 @@ class Text2SplatDecoder(nn.Module):
                 gaussian_splats=None,
             ):
 
-        B = x.shape[0]
+        if x is not None:
+            B = x.shape[0]
+        else:
+            B = gaussian_splats.shape[0]
         N_views = 1
 
         const_offset = None
 
         source_cameras_view_to_world = source_cameras_view_to_world.reshape(B*N_views, *source_cameras_view_to_world.shape[2:])
-        x = x.contiguous(memory_format=torch.channels_last)
+        if x is not None:
+            x = x.contiguous(memory_format=torch.channels_last)
 
-        if not self.do_decode:
-            assert gaussian_splats is None
+        if self.do_decode is False:
+            assert gaussian_splats is not None
             split_network_outputs = gaussian_splats
         else:
             split_network_outputs = self.gaussian_decoder(x, skips)

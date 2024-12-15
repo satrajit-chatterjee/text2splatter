@@ -4,9 +4,10 @@ import torchvision
 import numpy as np
 
 class CameraTransformGenerator:
-    def __init__(self, cfg, num_views):
+    def __init__(self, cfg, num_views, resolution=512):
         self.cfg = cfg
         self.num_views = num_views
+        self.resolution = resolution
         self.projection_matrix = self.getProjectionMatrix(
             znear=cfg.data.znear, zfar=cfg.data.zfar,
             fovX=cfg.data.fov * 2 * np.pi / 360, 
@@ -66,7 +67,7 @@ class CameraTransformGenerator:
         world_view_transforms = []
         view_world_transforms = []
         camera_centers = []
-        for i in range(self.num_views):
+        for _ in range(self.num_views):
             w2c_cmo = self.sample_twc()
             w2c_cmo = torch.cat([w2c_cmo, torch.tensor([[0, 0, 0, 1]], dtype=torch.float32)], dim=0)
             w2c_cmo = torch.matmul(self.opengl_to_colmap, w2c_cmo)
@@ -79,7 +80,7 @@ class CameraTransformGenerator:
         world_view_transforms = torch.stack(world_view_transforms)
         view_world_transforms = torch.stack(view_world_transforms)
         camera_centers = torch.stack(camera_centers)
-        focals_pixels = torch.full((self.num_views, 2), fill_value=self.fov2focal(self.cfg.data.fov, self.cfg.data.training_resolution))
+        focals_pixels = torch.full((self.num_views, 2), fill_value=self.fov2focal(self.cfg.data.fov, self.resolution))
         pps_pixels = torch.zeros((self.num_views, 2))
         translation_scaling_factor = 2.0 / torch.norm(camera_centers[0])
         world_view_transforms[:, 3, :3] *= translation_scaling_factor

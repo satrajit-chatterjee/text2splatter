@@ -172,8 +172,6 @@ def main(args):
     vae = AutoencoderKL.from_pretrained(
         args.pretrained_model_name_or_path, subfolder="vae"
     )
-    # vae_scale_factor = 2 ** (len(vae.config.block_out_channels) - 1)
-    # image_processor = VaeImageProcessor(vae_scale_factor=vae_scale_factor)
 
     # Freeze VAE parameters
     vae.requires_grad_(False)
@@ -182,10 +180,6 @@ def main(args):
     # We need input/output of this shape:
     # input.shape: torch.Size([4, 256, 16, 16])
     # output.shape: torch.Size([4, 24, 128, 128])
-
-    # with torch.no_grad():
-    #     gaussian_splat_decoder.original_decoder.conv_out.weight.copy_(vae.decoder.conv_out.weight.repeat(24 // 3, 1, 1, 1))
-
 
     # Set gaussian_splat_decoder to train
     gaussian_splat_decoder.requires_grad_(True)
@@ -281,9 +275,6 @@ def main(args):
     train_transforms = transforms.Compose(
         [
             transforms.Resize(args.resolution, interpolation=transforms.InterpolationMode.BILINEAR),
-            # transforms.CenterCrop(args.resolution) if args.center_crop else transforms.RandomCrop(args.resolution),
-            # transforms.RandomHorizontalFlip() if args.random_flip else transforms.Lambda(lambda x: x),
-            # transforms.ToTensor(),
             transforms.Normalize([0.5], [0.5]),
         ]
     )
@@ -373,28 +364,7 @@ def main(args):
 
     # Potentially load in the weights and states from a previous save
     if args.resume_from_checkpoint:
-        # if args.resume_from_checkpoint != "latest":
-        #     path = os.path.basename(args.resume_from_checkpoint)
-        # else:
-        #     # Get the most recent checkpoint
-        #     dirs = os.listdir(args.output_dir)
-        #     dirs = [d for d in dirs if d.startswith("checkpoint")]
-        #     dirs = sorted(dirs, key=lambda x: int(x.split("-")[1]))
-        #     path = dirs[-1] if len(dirs) > 0 else None
-
-        # if path is None:
-        #     accelerator.print(
-        #         f"Checkpoint '{args.resume_from_checkpoint}' does not exist. Starting a new training run."
-        #     )
-        #     args.resume_from_checkpoint = None
-        #     initial_global_step = 0
-        # else:
-        #     accelerator.print(f"Resuming from checkpoint {path}")
-        #     gaussian_splat_decoder.load_state_dict(torch.load(os.path.join(args.output_dir, path, "gaussian_splat_decoder.pth")))
-        #     global_step = int(path.split("-")[1])
-
         gaussian_splat_decoder.load_state_dict(torch.load("/data/satrajic/saved_models/text-3d-diffusion/decoder/checkpoint-34500/gaussian_splat_decoder.pth"))
-        # global_step = int(path.split("-")[1])
         global_step = 0
 
         initial_global_step = global_step
@@ -415,11 +385,8 @@ def main(args):
         gaussian_splat_decoder.train()
         for _, data in enumerate(train_dataloader):
             with accelerator.accumulate(gaussian_splat_decoder):
-                # input_images.shape: torch.Size([4, 1, 3, 128, 128])
                 input_images = data[1]
 
-                # input_images.shape: torch.Size([4, 3, 128, 128])
-                # input_images = input_images.reshape(-1, *input_images.shape[2:])
 
                 with torch.no_grad():
                     latents, skips = gt_encoder(input_images.to(accelerator.device, dtype=weight_dtype))

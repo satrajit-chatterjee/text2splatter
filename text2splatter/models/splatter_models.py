@@ -461,16 +461,20 @@ class Text2SplatDecoder(nn.Module):
                 gaussian_splats=None,
             ):
 
-        B = x.shape[0]
+        if x is not None:
+            B = x.shape[0]
+        else:
+            B = gaussian_splats.shape[0]
         N_views = 1
 
         const_offset = None
 
         source_cameras_view_to_world = source_cameras_view_to_world.reshape(B*N_views, *source_cameras_view_to_world.shape[2:])
-        x = x.contiguous(memory_format=torch.channels_last)
+        if x is not None:
+            x = x.contiguous(memory_format=torch.channels_last)
 
-        if not self.do_decode:
-            assert gaussian_splats is None
+        if self.do_decode is False:
+            assert gaussian_splats is not None
             split_network_outputs = gaussian_splats
         else:
             split_network_outputs = self.gaussian_decoder(x, skips)

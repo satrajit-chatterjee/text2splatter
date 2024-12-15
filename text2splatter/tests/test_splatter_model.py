@@ -6,7 +6,7 @@ from huggingface_hub import hf_hub_download
 from torch.utils.data import DataLoader
 import matplotlib.pyplot as plt
 
-from text2splatter.models import Text2SplatDecoder, SongUNetEncoder, SongUNetDecoder
+from text2splatter.models import Text2SplatDecoder, SongUNetEncoder, CameraTransformGenerator
 from text2splatter.splatter_image.datasets.dataset_factory import get_dataset
 from text2splatter.splatter_image.scene.gaussian_predictor import GaussianSplatPredictor
 # from text2splatter.splatter_image.gaussian_renderer import render_predicted
@@ -26,6 +26,10 @@ dataloader = DataLoader(dataset, batch_size=4, shuffle=True,
 datum = next(iter(dataloader))
 data = {k: v.to(device) for k, v in datum.items()}
 rot_transform_quats = data["source_cv2wT_quat"][:, :cfg.data.input_images]
+print(f"rot_transform_quats.shape: {rot_transform_quats.shape}")
+view_to_world_transforms = data["view_to_world_transforms"][:, :cfg.data.input_images, ...]
+print(f"view_to_world_transforms.shape: {view_to_world_transforms.shape}")
+exit()
 
 # input_images.shape: torch.Size([4, 1, 3, 128, 128])
 input_images = data["gt_images"][:, :cfg.data.input_images, ...]
@@ -76,6 +80,7 @@ exit()
 
 print(f"view_to_world_transforms.shape: {data['view_to_world_transforms'][:, :cfg.data.input_images, ...].shape}")
 print(f"rot_transform_quats.shape: {rot_transform_quats.shape}")
+print(f"world_view_transforms.shape: {data['world_view_transforms'].shape}")
 
 # Save the gt images
 fig, axs = plt.subplots(5, 5, figsize=(20, 20))

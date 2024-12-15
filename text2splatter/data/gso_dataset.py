@@ -10,6 +10,7 @@ from transformers import CLIPTextModel, CLIPTokenizer
 
 pretrained_model_name_or_path="stabilityai/stable-diffusion-2"
 
+PROMPTS_GSO_FOLDER = "../../data/gso/"
 GSO_ROOT = "/data/satrajic/google_scanned_objects/scratch/shared/beegfs/cxzheng/dataset_new/google_scanned_blender_25_w2c/" # Change this to your data directory
 PROMPTS_FOLDER = "../../data/gso/prompts.json"
 PATH_FOLDER = "../../data/gso/paths.json"
@@ -18,11 +19,10 @@ assert GSO_ROOT is not None, "Update path of the dataset"
 class GSODataset(torch.utils.data.Dataset):
     def __init__(self,
                  cfg,
-                 dataset_name = "test",
+                 train: bool = True,
                  transform = None,
                  gso_root = GSO_ROOT,
-                 prompts_folder = PROMPTS_FOLDER,
-                 path_folder = PATH_FOLDER,
+                 dataset_folder = PROMPTS_GSO_FOLDER,
                  style_prompt = "in the style of ttsplat"
                  ) -> None:
         
@@ -30,10 +30,8 @@ class GSODataset(torch.utils.data.Dataset):
         
         if gso_root is None or not os.path.exists(gso_root):
             raise ValueError("Please provide a valid path to the GSO dataset")
-        if prompts_folder is None or not os.path.exists(prompts_folder):
-            raise ValueError("Please provide a valid path to the prompts folder")
-        if path_folder is None or not os.path.exists(path_folder):
-            raise ValueError("Please provide a valid path to the path folder")
+        if dataset_folder is None or not os.path.exists(dataset_folder):
+            raise ValueError("Please provide a valid path to the dataset folder")
 
         self.tokenizer = CLIPTokenizer.from_pretrained(
             pretrained_model_name_or_path, subfolder="tokenizer", revision=None
@@ -42,9 +40,13 @@ class GSODataset(torch.utils.data.Dataset):
         self.cfg = cfg
         self.convert_to_tensor = transforms.ToTensor()
         self.root_dir = gso_root
-        assert dataset_name != "train", "No training on GSO dataset!"
-
-        self.dataset_name = dataset_name
+        
+        if train:
+            prompts_folder = os.path.join(dataset_folder, "training", "prompts.json")
+            path_folder = os.path.join(dataset_folder, "training", "paths.json")
+        else:
+            prompts_folder = os.path.join(dataset_folder, "validation", "prompts.json")
+            path_folder = os.path.join(dataset_folder, "validation", "paths.json")
         
         self.prompts = json.load(open(prompts_folder))
         self.paths = json.load(open(path_folder))

@@ -282,12 +282,13 @@ class Text2SplatDecoder(nn.Module):
         self.do_decode = do_decode
         self.cfg = cfg
         split_dimensions, scale_inits, bias_inits = self.get_splits_and_inits(True, cfg)
-        self.gaussian_decoder = SongUNetDecoder(
-                                cfg, 
-                                split_dimensions,
-                                final_out_bias=bias_inits,
-                                final_out_scale=scale_inits,
-                            )
+        if self.do_decode:
+            self.gaussian_decoder = SongUNetDecoder(
+                                    cfg, 
+                                    split_dimensions,
+                                    final_out_bias=bias_inits,
+                                    final_out_scale=scale_inits,
+                                )
         
         self.init_ray_dirs()
         

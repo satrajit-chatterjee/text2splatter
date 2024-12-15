@@ -11,7 +11,7 @@ from text2splatter.splatter_image.datasets.dataset_factory import get_dataset
 from text2splatter.splatter_image.scene.gaussian_predictor import GaussianSplatPredictor
 # from text2splatter.splatter_image.gaussian_renderer import render_predicted
 
-device = "cuda:1"
+device = "cuda:2"
 
 dataset_name = "gso"
 cfg_path = hf_hub_download(repo_id="szymanowiczs/splatter-image-v1", 
@@ -69,6 +69,10 @@ reconstruction = decoder(
     rot_transform_quats, 
     focals_pixels_pred
 )
+# Print the shapes of the reconstruction
+for k, v in reconstruction.items():
+    print(f"reconstruction[{k}].shape: {v.shape}")
+exit()
 
 print(f"view_to_world_transforms.shape: {data['view_to_world_transforms'][:, :cfg.data.input_images, ...].shape}")
 print(f"rot_transform_quats.shape: {rot_transform_quats.shape}")
